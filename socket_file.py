@@ -61,12 +61,12 @@ class Client_file(object):                                                    #t
         self.path=None
 
         self.file_size=0
-        self.HOST=HOST                                                #Server's address of IP
-        self.PORT=PORT                                                        #Server's port
+        # self.HOST=HOST                                                #Server's address of IP
+        # self.PORT=PORT                                                        #Server's port
         self.BUFSIZ=1024
-        self.ADDR = (self.HOST,self.PORT)
+        # self.ADDR = (self.HOST,self.PORT)
 
-        self.tcpCliSock=None
+        # self.tcpCliSock=None
 
 
 
@@ -76,32 +76,32 @@ class Client_file(object):                                                    #t
         return cmd,content
 
 
-    def connect_server(self):
-        self.tcpCliSock = socket(AF_INET,SOCK_STREAM)                         #create the new Client's socket object
-        self.tcpCliSock.connect(self.ADDR)                                    #connect the IP address
+    # def connect_server(self):
+    #     self.tcpCliSock = socket(AF_INET,SOCK_STREAM)                         #create the new Client's socket object
+    #     self.tcpCliSock.connect(self.ADDR)                                    #connect the IP address
 
-    def upload_file_header_send(self):
-        self.connect_server()
+    def upload_file_header_send(self,tcpCliSock):
+        # self.connect_server()
         while True:
             cmd,content=self.input_commend()
             self.path = os.path.join(self.BASE_DIR,content)
             self.file_name=os.path.basename(self.path)
             self.file_size=os.stat(self.path).st_size
             file_info = '%s|%s|%s' %(cmd,self.file_name,self.file_size)
-            self.tcpCliSock.sendall(bytes(file_info,'utf-8'))
+            tcpCliSock.sendall(bytes(file_info,'utf-8'))
             self.has_sent=0
             with open(self.path,'rb') as fp:
                 # self.tcpCliSock.recv(self.BUFSIZ)
                 while self.has_sent != self.file_size:
                     data = fp.read(self.BUFSIZ)
-                    self.tcpCliSock.sendall(data)
+                    tcpCliSock.sendall(data)
                     self.has_sent+=len(data)
                     print('\r'+'[Upload progress]：%s%.02f%%' %('>'*int((self.has_sent/self.file_size)*50),float(self.has_sent/self.file_size)*100),end='')
                 print()
                 print('%s Upload success！'%(self.file_name))
-    def upload_file_header_rev(self):                                         #rev faction
-            self.connect_server()
-            data = self.tcpCliSock.recv(self.BUFSIZ)
+    def upload_file_header_rev(self,tcpCliSock):                                         #rev faction
+            # self.connect_server()
+            data = tcpCliSock.recv(self.BUFSIZ)
             cmd,self.file_name,file_size = str(data,'utf-8').split('|')
             self.path=os.path.join(self.BASE_DIR,'rev')
             if not os.path.exists(self.path):
@@ -112,7 +112,7 @@ class Client_file(object):                                                    #t
             with open(self.path,'wb') as fp:
                 # self.tcpCliSock.recv(self.BUFSIZ)
                 while self.has_sent != self.file_size:
-                    rec_data=self.tcpCliSock.recv(self.BUFSIZ)
+                    rec_data=tcpCliSock.recv(self.BUFSIZ)
                     # rec_data = rec_data.decode('utf-8')
                     fp.write(rec_data)
                     self.has_sent+=len(rec_data)
