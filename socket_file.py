@@ -54,7 +54,7 @@ class Server_file(object):                                              #the fil
 
 class Client_file(object):                                                    #the file's transport of Client
     """docstring for client_file"""
-    def __init__(self,HOST,PORT):
+    def __init__(self):
         super(Client_file, self).__init__()
 
         self.BASE_DIR=os.path.dirname(os.path.abspath(__file__))
